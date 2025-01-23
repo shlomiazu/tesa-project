@@ -4,7 +4,7 @@ pipeline {
     agent any
 
     environment {
-        REPO_URL = 'https://github.com/shlomiazu/tesa-project/build_an_artifact'  // Git repository URL
+        REPO_URL = 'https://github.com/shlomiazu/tesa-project'  // Git repository URL
         BRANCH = 'master'  // Target branch
         DOCKER_IMAGE = 'shlomiaz/web-app'  // Docker Hub image name
         DOCKER_TAG = 'latest'  // Docker image tag
