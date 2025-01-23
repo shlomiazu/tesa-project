@@ -1,27 +1,45 @@
+@Library('build_an_artifact@main') _  // Import the shared library for `prepareEnv`
+
 pipeline {
-    agent { label 'agent2' }
+    agent any
 
     environment {
-        REPO_URL = 'https://github.com/shlomiazu/tesa-project'  // Git repository URL
-        BRANCH = 'main'  // Target branch
-        GITHUB_TOKEN = credentials('github-token')  // Use a Jenkins secret for GitHub token
-        DOCKER_IMAGE = 'shlomiaz/tesa-app'  // Docker Hub image name
+        REPO_URL = 'https://github.com/shlomiazu/tesa-project/build_an_artifact'  // Git repository URL
+        BRANCH = 'master'  // Target branch
+        DOCKER_IMAGE = 'shlomiaz/web-app'  // Docker Hub image name
         DOCKER_TAG = 'latest'  // Docker image tag
-        DOCKERHUB_PASSWORD = 'fyfyfyfyf'
     }
 
     triggers {
+        // Trigger the pipeline on SCM change
         pollSCM('* * * * *')  // Polling every minute for changes
     }
 
     stages {
-        stage('Clone repos') {
+        stage('Good Luck') {
             steps {
-                dir('shlomi-devops') {
-                    checkout([$class: 'GitSCM',
-                              branches: [[name: BRANCH]],
-                              userRemoteConfigs: [[url: REPO_URL]]
+                echo 'Good luck with the pipeline! ✨'
+            }
+        }
+
+        stage('Checkout SCM') {
+            steps {
+                echo 'Cloning the Git repository...'
+                checkout scm
+            }
+        }
+
+        stage('Prepare Environment') {
+            steps {
+                script {
+                    // Pass SCM details to the shared library function
+                    def scmDetails = prepareEnv(scm: [
+                        GIT_COMMIT: env.GIT_COMMIT,
+                        GIT_AUTHOR_NAME: env.GIT_AUTHOR_NAME,
+                        GIT_COMMITTER_MESSAGE: env.GIT_COMMITTER_MESSAGE,
+                        GIT_BRANCH: env.GIT_BRANCH
                     ])
+                    echo "SCM Details: ${scmDetails}"
                 }
             }
         }
@@ -90,15 +108,23 @@ pipeline {
             }
         }
 
-        stage('Push Docker Image to Docker Hub') {
+        stage('Push Changes to Git') {
             steps {
                 script {
-                    echo 'Pushing Docker image to Docker Hub...'
-                    withCredentials([string(credentialsId: 'dockerhub-credentials', variable: 'DOCKERHUB_PASSWORD')]) {
+                    echo 'Pushing changes to Git repository...'
+
+                    // Ensure the GitHub token is available from Jenkins credentials
+                    withCredentials([string(credentialsId: 'shlomi_git', variable: 'SHLOMI_GIT_TOKEN')]) {
                         sh '''
-                            docker login -u "shlomiaz" -p ${DOCKERHUB_PASSWORD}
-                            docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:${DOCKER_TAG}
-                            docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                            # Configure git with user details
+                            git config --global user.name "shlomiaz"
+                            git config --global user.email "shlomi.a82@gamil.com"
+                            git remote set-url origin https://shlomiazu:${SHLOMI_GIT_TOKEN}@github.com/shlomiazu/tesa-project.git
+
+                            # Add and commit changes
+                            git add .
+                            git commit -m "Automated commit from Jenkins pipeline"
+                            git push -f origin main  # Make sure force push is necessary here
                         '''
                     }
                 }
@@ -115,3 +141,4 @@ pipeline {
         }
     }
 }
+
