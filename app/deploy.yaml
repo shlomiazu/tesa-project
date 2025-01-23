@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  become: true
+
+  tasks:
+    - name: Deploy docker-compose
+      docker_compose:
+        project_dir: .
+        pull: true
+        file: docker-compose.yml
+        state: started

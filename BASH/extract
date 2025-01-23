@@ -1,0 +1,104 @@
+#!/bin/bash
+
+# Display usage/help
+usage() {
+    echo "Usage: extract [-h] [-r] [-v] file [file...]"
+    echo "  -h       Show help and exit"
+    echo "  -r       Recursively traverse folders and extract archives"
+    echo "  -v       Enable verbose output"
+    echo ""
+    echo "Supported compression methods (detected using the file command) include:
+          - Gzip
+          - Bzip2
+          - Zip archive
+          - Compress"
+    exit 0
+}
+
+# Function to decompress a file
+decompress_file() {
+    local file="$1"
+    local verbose_flag="$2"
+    local decompressed=false
+
+    # Ensure it's a regular file
+    if [[ ! -f "$file" ]]; then
+        [ "$verbose_flag" = true ] && echo "WARNING: Skipping: $file (not a regular file)"
+        ((not_decompressed_count++))
+        return
+    fi
+
+    # Detect compression type using `file` command
+    file_type=$(file -b "$file")
+    
+    # Match file type and decompress
+    case "$file_type" in
+        *gzip*)
+            [ "$verbose_flag" = true ] && echo "Decompressing (gzip): $file"
+            gunzip -f "$file" && decompressed=true
+            ;;
+        *bzip2*)
+            [ "$verbose_flag" = true ] && echo "Decompressing (bzip2): $file"
+            bunzip2 -f "$file" && decompressed=true
+            ;;
+        *Zip\ archive*)
+            [ "$verbose_flag" = true ] && echo "Decompressing (zip): $file"
+            unzip -o "$file" && decompressed=true
+            ;;
+        *compress*)
+            [ "$verbose_flag" = true ] && echo "Decompressing (compress): $file"
+            uncompress -f "$file" && decompressed=true
+            ;;
+        *)
+            [ "$verbose_flag" = true ] && echo "WARNING: Cannot decompress: $file (unsupported format)"
+            ;;
+    esac
+
+    if $decompressed; then
+        ((decompressed_count++))
+    else
+        ((not_decompressed_count++))
+    fi
+}
+
+# Initialize variables
+recursive=false
+verbose=false
+decompressed_count=0
+not_decompressed_count=0
+
+# Parse options
+while getopts ":hrv" opt; do
+    case ${opt} in
+        h) usage ;;
+        r) recursive=true ;;
+        v) verbose=true ;;
+        \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
+    esac
+done
+
+shift $((OPTIND - 1))
+
+# Ensure at least one file or folder is provided
+if [ "$#" -lt 1 ]; then
+    echo "Error: No files provided."
+    usage
+fi
+
+# Process each input file or folder
+for input in "$@"; do
+    if [ -f "$input" ]; then
+        decompress_file "$input" "$verbose"
+    elif [ -d "$input" ] && $recursive; then
+        find "$input" -type f | while read -r file; do
+            decompress_file "$file" "$verbose"
+        done
+    else
+        [ "$verbose" = true ] && echo "WARNING: Skipping: $input (not a file or folder)"
+        ((not_decompressed_count++))
+    fi
+done
+
+# Summary
+echo "Number of archives decompressed: $decompressed_count"
+echo "Number of files NOT decompressed: $not_decompressed_count"
