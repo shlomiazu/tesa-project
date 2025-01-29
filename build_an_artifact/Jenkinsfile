@@ -122,7 +122,7 @@ pipeline {
                             git remote set-url origin https://shlomiazu:${SHLOMI_GIT_TOKEN}@github.com/shlomiazu/tesa-project.git
 
                             # Add and commit changes
-                            git add .
+                            git add docker-build-artifact.zip
                             git commit -m "Automated commit from Jenkins pipeline"
                             git push -f origin main  # Make sure force push is necessary here
                         '''
@@ -135,6 +135,7 @@ pipeline {
     post {
         success {
             echo 'Pipeline completed successfully!'
+            build job: 'deploy-flask-project'
         }
         failure {
             echo 'Pipeline failed. Please check the logs for more information.'
