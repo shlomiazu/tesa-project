@@ -16,24 +16,24 @@
         name: docker-compose
         state: present
 
-    - name: Create project directory
-      file:
-        path: "{{ app_path }}"
-        state: directory
-        mode: '0755'
-
-    - name: Copy Flask application files
-      copy:
-        src: "{{ app_path }}"
-        dest: "/home/user/app"  # Adjust destination path as necessary
-        owner: root
-        group: root
-        mode: '0755'
-      with_items:
-        - app.py
-        - Dockerfile
-        - docker-compose.yml
-        - requirements.txt
+#    - name: Create project directory
+#      file:
+#        path: "{{ app_path }}"
+#        state: directory
+#        mode: '0755'
+#
+#    - name: Copy Flask application files
+#      copy:
+#        src: "{{ app_path }}"
+#        dest: "/home/user/app"  # Adjust destination path as necessary
+#        owner: root
+#        group: root
+#        mode: '0755'
+#      with_items:
+#        - app.py
+#        - Dockerfile
+#        - docker-compose.yml
+#        - requirements.txt
 
     - name: Build and start Docker containers with Docker Compose
       docker_compose:
@@ -43,9 +43,9 @@
         stopped: no
 
 
-    - name: Ensure Docker container is running
-      docker_container:
-        name: web
-        image: "shlomiaz/flask_app_image_name:latest"
-        state: started
-        restart_policy: always
+#    - name: Ensure Docker container is running
+#      docker_container:
+#        name: web
+#        image: "shlomiaz/flask_app_image_name:latest"
+#        state: started
+#        restart_policy: always

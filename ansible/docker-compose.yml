@@ -3,7 +3,7 @@ version: '3.7'
 services:
   web:
     build: .
-    image: flask_app_image_name:latest  # Ensure this matches the image name you're using
+    image: flask_app_image_name:latest
     ports:
       - "5000:5000"
     depends_on:
