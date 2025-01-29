@@ -78,4 +78,28 @@ pipeline {
             }
         }
 
-        stage('Ansible Deploy
+        stage('Ansible Deploy') {
+            steps {
+                script {
+                    def ansiblePlaybook = "deploy.yaml"
+                    if (fileExists(ansiblePlaybook)) {
+                        if (sh(script: "ansible-playbook ${ansiblePlaybook}", returnStatus: true) != 0) {
+                            error("Ansible deployment failed!")
+                        }
+                    } else {
+                        error("Ansible playbook not found: ${ansiblePlaybook}")
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs for more information.'
+        }
+    }
+}
