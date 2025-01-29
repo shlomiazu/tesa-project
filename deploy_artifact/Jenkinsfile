@@ -79,7 +79,7 @@ pipeline {
         stage('Ansible Deploy') {
             steps {
                 script {
-                    def ansiblePlaybook = "./ansiblefolder/deploy.yaml"
+                    def ansiblePlaybook = "./ansible/deploy.yaml"
                     if (fileExists(ansiblePlaybook)) {
                         if (sh(script: "ansible-playbook ${ansiblePlaybook}", returnStatus: true) != 0) {
                             error("Ansible deployment failed!")
