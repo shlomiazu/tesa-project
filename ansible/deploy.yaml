@@ -3,7 +3,7 @@
   hosts: localhost
   become: yes
   vars:
-    app_path: "/home/shlomi/repos/private/tesa-project/ansible"  # Correct this path
+    app_path: "{{ lookup('env', 'PWD') }}"
 
   tasks:
 #    - name: Ensure Docker is installed
