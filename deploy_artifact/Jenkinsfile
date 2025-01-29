@@ -66,9 +66,13 @@ pipeline {
                     def extractScript = "./BASH/extract"
                     if (fileExists(extractScript)) {
                         sh "chmod +x ${extractScript}"
-                        if (sh(script: "${extractScript} -r ${env.ZIP_FILE_NAME}", returnStatus: true) != 0) {
-                            error("Extraction failed!")
-                        }
+                        def extractDir = "./extracted"
+                        sh """
+                            ${extractScript} -r ${env.ZIP_FILE_NAME}
+                            mkdir -p ${extractDir}
+                            unzip -q ${env.ZIP_FILE_NAME} -d ${extractDir}
+                        """
+                        env.EXTRACTED_DIR = extractDir  // Set extracted folder as an environment variable
                     } else {
                         error("Extract script not found: ${extractScript}")
                     }
@@ -79,7 +83,7 @@ pipeline {
         stage('Ansible Deploy') {
             steps {
                 script {
-                    def ansiblePlaybook = "deploy.yaml"
+                    def ansiblePlaybook = "${env.EXTRACTED_DIR}/deploy.yaml"  // Use extracted folder for playbook
                     if (fileExists(ansiblePlaybook)) {
                         if (sh(script: "ansible-playbook ${ansiblePlaybook}", returnStatus: true) != 0) {
                             error("Ansible deployment failed!")
@@ -101,4 +105,3 @@ pipeline {
         }
     }
 }
-
