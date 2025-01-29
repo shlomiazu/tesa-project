@@ -63,7 +63,7 @@ pipeline {
         stage('Extract Artifact') {
             steps {
                 script {
-                    def extractScript = "./BASH/extract -r"
+                    def extractScript = "./BASH/extract"
                     if (fileExists(extractScript)) {
                         sh "chmod +x ${extractScript}"
                         if (sh(script: "${extractScript} -r ${env.ZIP_FILE_NAME}", returnStatus: true) != 0) {
