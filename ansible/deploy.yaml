@@ -6,10 +6,10 @@
     app_path: "/home/shlomi/repos/private/tesa-project/ansible"  # Correct this path
 
   tasks:
-    - name: Ensure Docker is installed
-      package:
-        name: docker.io
-        state: present
+#    - name: Ensure Docker is installed
+#      package:
+#        name: docker.io
+#        state: present
 
     - name: Ensure Docker Compose is installed
       package:
