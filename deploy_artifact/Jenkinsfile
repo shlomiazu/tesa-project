@@ -64,16 +64,10 @@ pipeline {
             steps {
                 script {
                     def extractScript = "./BASH/extract"
-
                     if (fileExists(extractScript)) {
                         sh "chmod +x ${extractScript}"
-                        def extractionStatus = sh(script: "${extractScript} -r ${env.ZIP_FILE_NAME}", returnStatus: true)
-                        if (extractionStatus != 0) {
+                        if (sh(script: "${extractScript} -r ${env.ZIP_FILE_NAME}", returnStatus: true) != 0) {
                             error("Extraction failed!")
-                        } else {
-                            // Assume extraction creates a folder with the same name as the ZIP file (minus the extension)
-                            env.FOLDER_NAME = env.ZIP_FILE_NAME - "output"
-                            echo "Extracted folder: ${env.FOLDER_NAME}"
                         }
                     } else {
                         error("Extract script not found: ${extractScript}")
@@ -85,11 +79,9 @@ pipeline {
         stage('Ansible Deploy') {
             steps {
                 script {
-                    def ansiblePlaybook = "${env.FOLDER_NAME}/playbook.yml"  // Assuming playbook.yml is inside the extracted folder
-                    echo "Deploying Ansible Playbook in folder: ${ansiblePlaybook}"
+                    def ansiblePlaybook = "./ansible/deploy.yaml"
                     if (fileExists(ansiblePlaybook)) {
-                        def ansibleStatus = sh(script: "ansible-playbook ${ansiblePlaybook}", returnStatus: true)
-                        if (ansibleStatus != 0) {
+                        if (sh(script: "ansible-playbook ${ansiblePlaybook}", returnStatus: true) != 0) {
                             error("Ansible deployment failed!")
                         }
                     } else {
@@ -109,3 +101,4 @@ pipeline {
         }
     }
 }
+
