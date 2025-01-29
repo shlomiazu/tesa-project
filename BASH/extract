@@ -106,4 +106,3 @@ done
 echo "Folder name: $foldername"
 echo "Number of archives decompressed: $decompressed_count"
 echo "Number of files NOT decompressed: $not_decompressed_count"
-
