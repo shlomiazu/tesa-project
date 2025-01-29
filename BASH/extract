@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set foldername to the name of the current directory
+foldername=$(basename "$PWD")
+
 # Display usage/help
 usage() {
     echo "Usage: extract [-h] [-r] [-v] file [file...]"
@@ -30,7 +33,7 @@ decompress_file() {
 
     # Detect compression type using `file` command
     file_type=$(file -b "$file")
-    
+
     # Match file type and decompress
     case "$file_type" in
         *gzip*)
@@ -100,5 +103,7 @@ for input in "$@"; do
 done
 
 # Summary
+echo "Folder name: $foldername"
 echo "Number of archives decompressed: $decompressed_count"
 echo "Number of files NOT decompressed: $not_decompressed_count"
+
