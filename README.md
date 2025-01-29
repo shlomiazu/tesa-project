@@ -2,6 +2,7 @@
 1. Groovy Scm Pipeline 
 2. Ansible deploy a Docker 
 3. BASH script extract 
+4. Deploy Artifact
 
 ## 1. Jenkins Pipeline with Shared Libraries (build an artifact folder)
 ### Pipeline Overview 
@@ -54,7 +55,7 @@ Compress (.Z)
 - **Flags**: the script provides verbose output when the -v flag is used.
 - **Help** for main help menu use (-h).
 
-# 4. deploy Artifact 
+# 4. Deploy Artifact 
 
 ### Pipeline Overview
 
