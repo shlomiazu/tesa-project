@@ -1,5 +1,5 @@
-# tesa-project
-1. Groovy Scm Pipeline ,
+# Tesa-Project
+1. Groovy Scm Pipeline 
 2. Ansible deploy a Docker 
 3. BASH script extract 
 
@@ -11,6 +11,9 @@
 - **Build & Package**: Uses docker-compose to build and package the app into a ZIP file.
 - **Push to Git**: Commits and pushes changes back to GitHub.
 - **Automated Execution**: Triggers every minute if there are new commits.
+- **post block**: 
+- On success: It prints a success message and triggers the deployment job (deploy-flask-project).
+- On failure: It prints an error message, asking users to check the logs for more details.
 
 
 
@@ -39,14 +42,26 @@ Ensure that the following software is installed on your machine:
 * └── README.md           
 
 # 3. BASH script extract
-### Script Overview
-- The script takes files and directories as input and attempts to decompress them.
-- **file supported**: It supports different compression formats
+
+The script takes files and directories as input and attempts to decompress them.
+- **File supported**: It supports different compression formats
 including:
 Gzip (.gz)
 Bzip2 (.bz2)
 Zip (.zip)
 Compress (.Z)
-- **recursively**: the script can recursively extract archives from directories if the -r flag is used.
-- **flags**: the script provides verbose output when the -v flag is used.
-- **help** for main help menu use (-h).
+- **Recursively**: the script can recursively extract archives from directories if the -r flag is used.
+- **Flags**: the script provides verbose output when the -v flag is used.
+- **Help** for main help menu use (-h).
+
+# 4. deploy Artifact 
+
+### Pipeline Overview
+
+This Groovy script is called from the first pipeline, named deploy-flask-project, and it automates the following process:
+
+- Clone out code from SCM.
+- Ensuring Docker is installed, and installing it if necessary.
+- Installing Docker Compose.
+- Finding and extracting a ZIP artifact using an section 3 (BASH script extract).
+- Deploying the artifact uploaded in section 1 (Jenkins Pipeline with Shared Libraries) using an Ansible playbook from section 2 (Flask App Deployment with Docker, Docker Compose, and Ansible) to the deployments.
