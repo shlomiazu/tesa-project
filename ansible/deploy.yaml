@@ -6,7 +6,6 @@
     app_path: "{{ lookup('env', 'PWD') }}"
 
   tasks:
-
     - name: Ensure Docker Compose is installed
       package:
         name: docker-compose
