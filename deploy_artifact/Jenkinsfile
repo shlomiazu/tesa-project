@@ -63,7 +63,7 @@ pipeline {
         stage('Extract Artifact') {
             steps {
                 script {
-                    def extractScript = "./BASH/extract"
+                    def extractScript = "./BASH/extract -r"
                     if (fileExists(extractScript)) {
                         sh "chmod +x ${extractScript}"
                         if (sh(script: "${extractScript} -r ${env.ZIP_FILE_NAME}", returnStatus: true) != 0) {
@@ -79,7 +79,7 @@ pipeline {
         stage('Ansible Deploy') {
             steps {
                 script {
-                    def ansiblePlaybook = "./ansible/deploy.yaml"
+                    def ansiblePlaybook = "deploy.yaml"
                     if (fileExists(ansiblePlaybook)) {
                         if (sh(script: "ansible-playbook ${ansiblePlaybook}", returnStatus: true) != 0) {
                             error("Ansible deployment failed!")
