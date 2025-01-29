@@ -15,9 +15,18 @@
       debug:
         msg: "Current working directory is: {{ lookup('env', 'PWD') }}"
 
+    - name: Check if docker-compose.yml exists
+      stat:
+        path: "{{ app_path }}/docker-compose.yml"
+      register: docker_compose_file
+
+    - name: Set app_path based on docker-compose.yml existence
+      set_fact:
+        app_path: "{{ app_path if docker_compose_file.stat.exists else app_path + '/ansible' }}"
+
     - name: Build and start Docker containers with Docker Compose
       docker_compose:
-        project_src: "{{ app_path }}/ansible"
+        project_src: "{{ app_path }}"
         build: yes
         restarted: yes
         stopped: no
