@@ -82,7 +82,7 @@ pipeline {
             steps {
                 script {
                     // Get the folder name dynamically
-                    env.foldername = sh(script: "basename \\$(pwd)", returnStdout: true).trim()
+                    env.foldername = sh(script: "pwd | xargs basename", returnStdout: true).trim()
                     echo "Deploying Ansible Playbook in folder: ${env.foldername}"
 
                     if (fileExists(env.foldername)) {
