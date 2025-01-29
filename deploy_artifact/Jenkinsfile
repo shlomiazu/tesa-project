@@ -72,7 +72,7 @@ pipeline {
                             error("Extraction failed!")
                         } else {
                             // Assume extraction creates a folder with the same name as the ZIP file (minus the extension)
-                            env.FOLDER_NAME = env.ZIP_FILE_NAME - ".zip"
+                            env.FOLDER_NAME = env.ZIP_FILE_NAME - "output"
                             echo "Extracted folder: ${env.FOLDER_NAME}"
                         }
                     } else {
