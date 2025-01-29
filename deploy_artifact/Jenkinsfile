@@ -64,6 +64,7 @@ pipeline {
             steps {
                 script {
                     def extractScript = "./BASH/extract"
+                    echo "Deploying Ansible Playbook in folder: ${ansiblePlaybook}"  // Print the folder name
                     if (fileExists(extractScript)) {
                         sh "chmod +x ${extractScript}"
                         def extractionStatus = sh(script: "${extractScript} -r ${env.ZIP_FILE_NAME}", returnStatus: true)
